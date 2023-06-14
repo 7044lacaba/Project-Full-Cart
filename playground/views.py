@@ -79,9 +79,25 @@ def say_hello(request):
     # We can also splice the query set
     #query_set = Product.objects.all()[:5]
 
-    # When you want specific collumns from a table
+    # When you want specific collumns from a table, this returns a dictionary
     #query_set = Product.objects.values('id', 'title', 'collection__title')
 
+    # On the other hand '.values_list' returns a touple of the values for each key
+    #query_set = Product.objects.values_list('id', 'title', 'collection__title')
+
+    # This is how you reverse query in Django, you wrap an query ina query that checks the linking id.
+    #query_set = OrderItem.objects.filter(order_id__gt=0).order_by('product__title')
+    #query_set = Product.objects.filter(id__in=OrderItem.objects.values('product_id').distinct()).order_by('title')
+
+    # Use '.defer' and '.only' like '.value' but note that it locks out the coloumns and asking for thoes said 
+    # coloumns later will cause an individual query every time we want to access the locked coloumns
+    #query_set = Product.objects.only('id', 'title')
+    #query_set = Product.objects.defer('id', 'title')
+
+    #
+    query_set = Product.objects.select_related('collection').all()
+
+    
 
 
 
