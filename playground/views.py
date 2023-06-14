@@ -43,12 +43,46 @@ def say_hello(request):
     #query_set = OrderItem.objects.filter(product__collection__id=3)
     #query_set = OrderItem.objects.filter(order__customer__id=1)
 
-    # For the 'and' operator you may use any of the meathods below
+    # For the 'and' operator you can use either of the meathods below
     #query_set = Product.objects.filter(inventory__lt=10, unit_price__lt=20)
-    #query_set
+    #query_set = Product.objects.filter(inventory__lt=10).filter(unit_price__lt=20)
 
+    # For the 'or' operator you can use either of the meathods below (import Q)
     #query_set = Product.objects.filter(Q(inventory__lt=10) | Q(unit_price__lt=20))
+
+    # For the 'not' operator you can use you use '~'
+    #query_set = Product.objects.filter(Q(inventory__lt=10) & ~Q(unit_price__lt=20))
+
+    # To compare two feilds we can use F objects, additionally we can also referance a related table
     #query_set = Product.objects.filter(inventory=F('unit_price'))
+    #query_set = Product.objects.filter(inventory=F('collection__id'))
+
+    # In terms of sorting we can order things with the 'order_by' operator, we can add a '-' to have it in decending order
+    # additionally we can sort with multiple feilds, shown in the second example. The second example sorts the results by
+    # unit price in asc order and if there are multiple with the same price its then sorted by title in des order. Adding
+    # a '.reverse' opperator reverses all of that. 
+    #query_set = Product.objects.order_by('title')
+    #query_set = Product.objects.order_by('unit_price', '-title')
+    #query_set = Product.objects.order_by('unit_price', '-title').reverse
+
+    # Collection with id 1 sorted by unit price 
+    #query_set = Product.objects.filter(collection__id=1).order_by('unit_price')
+
+    # By asking for the first element in the list you convert the query set into an actual object, dont forget 
+    # to properly rename the variable and to remove the 'list()' operator from your return 
+    #product = Product.objects.order_by('unit_price')[0]
+
+    # We can also use '.earliest', this also returns an object
+    #product = Product.objects.earliest('unit_price')
+    #product = Product.objects.latest('unit_price')
+
+    # We can also splice the query set
+    #query_set = Product.objects.all()[:5]
+
+    # When you want specific collumns from a table
+    #query_set = Product.objects.values('id', 'title', 'collection__title')
+
+
 
 
     # Since a query set is returned you must convert it to a list. 
