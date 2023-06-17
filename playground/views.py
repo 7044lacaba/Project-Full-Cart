@@ -94,8 +94,19 @@ def say_hello(request):
     #query_set = Product.objects.only('id', 'title')
     #query_set = Product.objects.defer('id', 'title')
 
-    #
-    query_set = Product.objects.select_related('collection').all()
+    # This selects all from both and 'inner join' at related point 
+    # select_related (1) - product has one collection
+    #query_set = Product.objects.select_related('collection').all()
+
+    # prefetch_related (n) - product has many promotions
+    query_set = Product.objects.prefetch_related('promotions').all()
+    
+
+    # To add more you just add '__example'
+    #query_set = Product.objects.select_related('collection__example').all()
+
+
+
 
     
 
