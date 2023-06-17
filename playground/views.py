@@ -94,13 +94,14 @@ def say_hello(request):
     #query_set = Product.objects.only('id', 'title')
     #query_set = Product.objects.defer('id', 'title')
 
-    # This selects all from both and 'inner join' at related point 
+    # This selects all from both and 'inner join' at related point (Product is main table, then put the bridge table in 
+    # quotes, you can also link more by adding double underscore)
     # select_related (1) - product has one collection
+    query_set = Product.objects.select_related('collection').all()
     #query_set = Product.objects.select_related('collection').all()
 
     # prefetch_related (n) - product has many promotions
-    query_set = Product.objects.prefetch_related('promotions').all()
-    
+    #query_set = Product.objects.prefetch_related('promotions').all()
 
     # To add more you just add '__example'
     #query_set = Product.objects.select_related('collection__example').all()
