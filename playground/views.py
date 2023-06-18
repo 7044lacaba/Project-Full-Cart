@@ -1,9 +1,9 @@
 from django.shortcuts import render
 from django.db.models import Q, F
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models.aggregates import Count, Max, Min, Avg, Sum
 from store.models import Product, Customer, Collection, OrderItem, Order
 
-      #query_set = Order.objects.select_related('customer').prefetch_related('orderitem_set__product').order_by('-placed_at')[:5]
 
 def say_hello(request):
     
@@ -110,8 +110,22 @@ def say_hello(request):
     # Problem
     query_set = Order.objects.prefetch_related('orderitem_set__product').select_related('customer').order_by('-placed_at')[:5]
 
+    # Count using the primary key/'id', if you use something like 'description' it will count each and skip over any 
+    # values that are null. This doesnt return a query set but rather a dictionary, to access the answer the key will 
+    # be 'id__count'
+    #result = Product.objects.aggregate(Count('id'))
 
+    # To change the key name store it into a variable with the desired name
+    #result = Product.objects.aggregate(count_1=Count('id'))
+
+    # Since aggregate is a meathod of query sets you can apply it to wherever you have a query set.
+    #result = Product.objects.filter(collection__id=1).aggregate(count_1=Count('id'), min_price=Min('unit_price'))
+
+    # Problems
+    result = Order.objects.aggregate(Count('id'))
+
+    
 
 
     # Since a query set is returned you must convert it to a list. 
-    return render(request, 'hello.html', {'name': 'Mosh', 'list': list(query_set)})
+    return render(request, 'hello.html', {'name': 'Mosh', 'result': result})
