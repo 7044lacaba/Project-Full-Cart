@@ -123,8 +123,9 @@ def say_hello(request):
 
     # Problems
     result = Order.objects.aggregate(Count('id'))
-
-    
+    result = OrderItem.objects.filter(product_id=1).aggregate(Count('id'))
+    result = Order.objects.filter(customer_id=1).aggregate(Count('id'))
+    result = Product.objects.filter(collection_id=3).aggregate(Min('unit_price'), Max('unit_price'),Avg('unit_price'))
 
 
     # Since a query set is returned you must convert it to a list. 
