@@ -1,7 +1,8 @@
 from django.shortcuts import render
+from django.db.models import Value
 from django.db.models import Q, F
-from django.core.exceptions import ObjectDoesNotExist
 from django.db.models.aggregates import Count, Max, Min, Avg, Sum
+from django.core.exceptions import ObjectDoesNotExist
 from store.models import Product, Customer, Collection, OrderItem, Order
 
 
@@ -122,11 +123,12 @@ def say_hello(request):
     #result = Product.objects.filter(collection__id=1).aggregate(count_1=Count('id'), min_price=Min('unit_price'))
 
     # Problems
-    result = Order.objects.aggregate(Count('id'))
-    result = OrderItem.objects.filter(product_id=1).aggregate(Count('id'))
-    result = Order.objects.filter(customer_id=1).aggregate(Count('id'))
-    result = Product.objects.filter(collection_id=3).aggregate(Min('unit_price'), Max('unit_price'),Avg('unit_price'))
+    #result = Order.objects.aggregate(Count('id'))
+    #result = OrderItem.objects.filter(product_id=1).aggregate(Sum('quantity'))
+    #result = Order.objects.filter(customer_id=1).aggregate(Count('id'))
+    #result = Product.objects.filter(collection_id=3).aggregate(Min('unit_price'), Max('unit_price'), Avg('unit_price'))
 
+    query_set = Customer.objects.annotate(is_new=True)
 
     # Since a query set is returned you must convert it to a list. 
-    return render(request, 'hello.html', {'name': 'Mosh', 'result': result})
+    return render(request, 'hello.html', {'name': 'Mosh', 'result': list(query_set)})
