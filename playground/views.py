@@ -1,6 +1,7 @@
 from django.shortcuts import render
-from django.db.models import Value
+from django.db.models import Value, Func
 from django.db.models import Q, F
+from django.db.models.functions import Concat
 from django.db.models.aggregates import Count, Max, Min, Avg, Sum
 from django.core.exceptions import ObjectDoesNotExist
 from store.models import Product, Customer, Collection, OrderItem, Order
@@ -128,7 +129,22 @@ def say_hello(request):
     #result = Order.objects.filter(customer_id=1).aggregate(Count('id'))
     #result = Product.objects.filter(collection_id=3).aggregate(Min('unit_price'), Max('unit_price'), Avg('unit_price'))
 
-    query_set = Customer.objects.annotate(is_new=True)
+    # This adds a new collumn 'is_new' and a boolian value (represented by 1 in the table)
+    query_set = Customer.objects.annotate(is_new=Value(True))
+
+    # With F objects we can refer to values in a specified collumn and even form computations
+    query_set = Customer.objects.annotate(new_id=F('id') + 1)
+
+    # Google 'django database functions' for documentation on more functions
+    # Below are ways to call database functions and store the results into a new collumn
+    query_set = Customer.objects.annotate(full_name=Func(F('first_name'), Value(' '), F('last_name'), function='CONCAT'))
+    query_set = Customer.objects.annotate(full_name=Concat('first_name', Value(' '),'last_name'))
+
+    # Reverse relationships for counting wouldnt be 'order_set' instead use 'order'
+    # 
+    query_set = Customer.objects.annotate(orders_count=Count('order'))
+                                          
+
 
     # Since a query set is returned you must convert it to a list. 
     return render(request, 'hello.html', {'name': 'Mosh', 'result': list(query_set)})
