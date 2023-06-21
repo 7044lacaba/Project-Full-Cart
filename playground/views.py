@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.db.models import Value, Func
+from django.db.models import Value, Func, ExpressionWrapper, DecimalField
 from django.db.models import Q, F
 from django.db.models.functions import Concat
 from django.db.models.aggregates import Count, Max, Min, Avg, Sum
@@ -141,10 +141,24 @@ def say_hello(request):
     query_set = Customer.objects.annotate(full_name=Concat('first_name', Value(' '),'last_name'))
 
     # Reverse relationships for counting wouldnt be 'order_set' instead use 'order'
-    # 
+    # This forms a left join
     query_set = Customer.objects.annotate(orders_count=Count('order'))
                                           
+    # Use an expression wrapper for more control, sicne the expression below returns an error in regards to what the output 
+    # syntax is going to be we can specify thats its going to be a decimal (since its money)
+    #discounted_price = ExpressionWrapper(F('unit_price') * 0.8, output_field=DecimalField())
+    #query_set = Product.objects.annotate(discount_price=discounted_price)
 
+
+    #customer with their last order id
+
+
+    #query_set = Product.objects.filter(inventory=F('unit_price'))
+    query_set = Customer.objects.filter(id=F('order_set__order_id'))
+    #.order_by('-order_set__placed_at')
+    #[0].annotate(last_order_id=F('order__id'))
+    
+    
 
     # Since a query set is returned you must convert it to a list. 
     return render(request, 'hello.html', {'name': 'Mosh', 'result': list(query_set)})
