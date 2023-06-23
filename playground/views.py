@@ -4,7 +4,9 @@ from django.db.models import Q, F
 from django.db.models.functions import Concat
 from django.db.models.aggregates import Count, Max, Min, Avg, Sum
 from django.core.exceptions import ObjectDoesNotExist
+from django.contrib.contenttypes.models import ContentType
 from store.models import Product, Customer, Collection, OrderItem, Order
+from tags.models import TaggedItem
 
 
 def say_hello(request):
@@ -72,7 +74,7 @@ def say_hello(request):
     query_set = Product.objects.filter(collection__id=1).order_by('unit_price')
 
     # By asking for the first element in the list you convert the query set into an actual object, dont forget 
-    # to properly rename the variable and to remove the 'list()' operator from your return 
+    # to properly rename the variable and to remove the 'list()' operator from your return
     #product = Product.objects.order_by('unit_price')[0]
 
     # We can also use '.earliest', this also returns an object
@@ -146,19 +148,39 @@ def say_hello(request):
                                           
     # Use an expression wrapper for more control, sicne the expression below returns an error in regards to what the output 
     # syntax is going to be we can specify thats its going to be a decimal (since its money)
-    #discounted_price = ExpressionWrapper(F('unit_price') * 0.8, output_field=DecimalField())
-    #query_set = Product.objects.annotate(discount_price=discounted_price)
+    discounted_price = ExpressionWrapper(F('unit_price') * 0.8, output_field=DecimalField())
+    query_set = Product.objects.annotate(discount_price=discounted_price)
 
+    # This does all the work underneath the hood, it is iterating through each row of the 'Customer' table and is using  
+    # that id to calculate what ever you want to annotate. In this case returns the highest order id that is linked to 
+    # the customer id
+    query_set = Customer.objects.annotate(last_order_id=Max('order__id'))
+    query_set = Collection.objects.annotate(number_of_products=Count('product'))
+    query_set = Customer.objects.annotate(order_count=Count('order')).filter(order_count__gt=5)
+    query_set = Customer.objects.annotate(total_spent=Sum(F('order__orderitem__unit_price') * F('order__orderitem__quantity')))
+    query_set = Product.objects.annotate(total_sales=Sum(F('orderitem__quantity') * F('orderitem__unit_price'))).order_by('-total_sales')[:5]
 
-    #customer with their last order id
+    # Find the content type id for product, make sure to import the necessary database
+    #TaggedItem.objects.get_tags_for(Product, 1)
 
+    # Evaluating the query_set request is expensive so anytime the same one is called again it revers to the query set
+    # cache. Caching only works if you evaluate the entire query set first. Will not work if 'query_set[0]' is first
+    query_set = Product.objects.all()
+    list(query_set)
+    list(query_set)
+    query_set[0]
 
-    #query_set = Product.objects.filter(inventory=F('unit_price'))
-    query_set = Customer.objects.filter(id=F('order_set__order_id'))
-    #.order_by('-order_set__placed_at')
-    #[0].annotate(last_order_id=F('order__id'))
-    
-    
+    # Insert into
+    # If there is missing value then it will route the value to its default setting which is '' (empty)
+    #collection = Collection(pk=11)
+    #collection.title = 'Games'
+    #collection.featured_product = None
+    #collection.save()
+    #collection = Collection.objects.create(name='a', featured_product_id=1)
+
+    #
+    Collection.objects.filter(pk=11).update(featured_product=None)
+
 
     # Since a query set is returned you must convert it to a list. 
-    return render(request, 'hello.html', {'name': 'Mosh', 'result': list(query_set)})
+    return render(request, 'hello.html', {'name': 'Mosh', 'tags': list(query_set)})
