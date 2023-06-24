@@ -178,7 +178,7 @@ def say_hello(request):
     #collection.save()
     #collection = Collection.objects.create(name='a', featured_product_id=1)
 
-    #
+    # This is to inset and skip any default values
     Collection.objects.filter(pk=11).update(featured_product=None)
 
 
