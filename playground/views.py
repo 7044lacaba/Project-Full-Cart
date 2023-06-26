@@ -181,6 +181,8 @@ def say_hello(request):
     # This is to inset and skip any default values
     Collection.objects.filter(pk=11).update(featured_product=None)
 
+    #
+
 
     # Since a query set is returned you must convert it to a list. 
     return render(request, 'hello.html', {'name': 'Mosh', 'tags': list(query_set)})
