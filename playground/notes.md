@@ -16,26 +16,26 @@ def say_hello(request):
     # '.all', like most of the 'objects.' methods, returns a query set that is not yet evaluated. In contrast when you
     # iterate through the query, turn it into a list, or access an individual element it returns a result immediately
     query_set = Product.objects.all()
-    #list(query_set)
-    #query_set[0:5]
+    list(query_set)
+    query_set[0:5]
 
     # Pay attention if your function returns an actual object or a query set and name your variable accordingly.
     query_set = Product.objects.all()
-    #product = Product.objects.get(id=1)
-    #product = Product.objects.get(pk=1)
+    product = Product.objects.get(id=1)
+    product = Product.objects.get(pk=1)
 
     # When you run an error enducing query you can use a try catch block along with 'ObjectDoesNotExist' to
     # return a error message.
-    #try:
-    #    product = Product.objects.get(pk=0)
-    #except ObjectDoesNotExist:
-    #    pass
+    try:
+        product = Product.objects.get(pk=0)
+    except ObjectDoesNotExist:
+        pass
 
     # When an error is returned and we want to avoid using 'try' we can add the '.first' operator to have it return None
-    #product = Product.objects.filter(pk=0).first()
+    product = Product.objects.filter(pk=0).first()
 
     # We can also check if something exists, remember that it returns a boolean statement and to plan accordingly
-    #exists = Product.objects.filter(pk=0).exists()
+    exists = Product.objects.filter(pk=0).exists()
 
     # Filtering data does not take logical operators, instead we need to look up a kew word value. Look up query set
     # api for Django to find the documentation for field lookups. Below is the example for 'greater than'
@@ -76,11 +76,11 @@ def say_hello(request):
 
     # By asking for the first element in the list you convert the query set into an actual object, dont forget 
     # to properly rename the variable and to remove the 'list()' operator from your return
-    #product = Product.objects.order_by('unit_price')[0]
+    product = Product.objects.order_by('unit_price')[0]
 
     # We can also use '.earliest', this also returns an object
-    #product = Product.objects.earliest('unit_price')
-    #product = Product.objects.latest('unit_price')
+    product = Product.objects.earliest('unit_price')
+    product = Product.objects.latest('unit_price')
 
     # We can also splice the query set
     query_set = Product.objects.all()[:5]
@@ -118,19 +118,19 @@ def say_hello(request):
     # Count using the primary key/'id', if you use something like 'description' it will count each and skip over any 
     # values that are null. This doesnt return a query set but rather a dictionary, to access the answer the key will 
     # be 'id__count'
-    #result = Product.objects.aggregate(Count('id'))
+    result = Product.objects.aggregate(Count('id'))
 
     # To change the key name store it into a variable with the desired name
-    #result = Product.objects.aggregate(count_1=Count('id'))
+    result = Product.objects.aggregate(count_1=Count('id'))
 
     # Since aggregate is a meathod of query sets you can apply it to wherever you have a query set.
-    #result = Product.objects.filter(collection__id=1).aggregate(count_1=Count('id'), min_price=Min('unit_price'))
+    result = Product.objects.filter(collection__id=1).aggregate(count_1=Count('id'), min_price=Min('unit_price'))
 
     # Problems
-    #result = Order.objects.aggregate(Count('id'))
-    #result = OrderItem.objects.filter(product_id=1).aggregate(Sum('quantity'))
-    #result = Order.objects.filter(customer_id=1).aggregate(Count('id'))
-    #result = Product.objects.filter(collection_id=3).aggregate(Min('unit_price'), Max('unit_price'), Avg('unit_price'))
+    result = Order.objects.aggregate(Count('id'))
+    result = OrderItem.objects.filter(product_id=1).aggregate(Sum('quantity'))
+    result = Order.objects.filter(customer_id=1).aggregate(Count('id'))
+    result = Product.objects.filter(collection_id=3).aggregate(Min('unit_price'), Max('unit_price'), Avg('unit_price'))
 
     # This adds a new collumn 'is_new' and a boolian value (represented by 1 in the table)
     query_set = Customer.objects.annotate(is_new=Value(True))
@@ -162,7 +162,7 @@ def say_hello(request):
     query_set = Product.objects.annotate(total_sales=Sum(F('orderitem__quantity') * F('orderitem__unit_price'))).order_by('-total_sales')[:5]
 
     # Find the content type id for product, make sure to import the necessary database
-    #TaggedItem.objects.get_tags_for(Product, 1)
+    TaggedItem.objects.get_tags_for(Product, 1)
 
     # Evaluating the query_set request is expensive so anytime the same one is called again it revers to the query set
     # cache. Caching only works if you evaluate the entire query set first. Will not work if 'query_set[0]' is first
@@ -172,67 +172,68 @@ def say_hello(request):
     query_set[0]
 
     # Create objects
-    #collection = Collection()
-    #collection.title = 'Video Games'
-    #collection.featured_product = Product(pk=1)
-    #collection.save()
+    collection = Collection()
+    collection.title = 'Video Games'
+    collection.featured_product = Product(pk=1)
+    collection.save()
 
     # Above into one line of code but there is no intellesense 
-    #collection = Collection.objects.create(name='a', featured_product_id=1)
+    collection = Collection.objects.create(name='a', featured_product_id=1)
 
     # Updating Objects: If there is missing value then it will route the value to its default setting which is '' (empty), 
     # since the title has not been specified then it will be empty
-    #collection = Collection(pk=11)
-    #collection.featured_product = None
-    #collection.save()
+    collection = Collection(pk=11)
+    collection.featured_product = None
+    collection.save()
 
     # Update Objects: You can pull all the information first before updating and will then set the default to whatever 
     # exsisting value isnt changed - meaning whatever isnt changed 
-    #collection = Collection.objects.get(pk=11)
-    #collection.featured_product = None
-    #collection.save()
+    collection = Collection.objects.get(pk=11)
+    collection.featured_product = None
+    collection.save()
 
     # Update Objects: The code above reads to get information about the updated subject, for optimization (not rec) you can
     # filter then update to target specific cells 
-    #Collection.objects.filter(pk=11).update(featured_product=None)
+    Collection.objects.filter(pk=11).update(featured_product=None)
 
     # Delete Objects:
-    #collection = Collection(pk=11)
-    #collection.delete()
+    collection = Collection(pk=11)
+    collection.delete()
 
     # Delete Objects: multiple
-    #Collection.objects.filter(id__gt=5).delete()
+    Collection.objects.filter(id__gt=5).delete()
 
-    #cart = Cart()
-    #cart.save()
+    # Problem:
+    cart = Cart()
+    cart.save()
 
-    #cartitem = CartItem()
-    #cartitem.cart = cart
-    #cartitem.quantity = 1
-    #cartitem.product_id = 1
-    #cartitem.save()
+    cartitem = CartItem()
+    cartitem.cart = cart
+    cartitem.quantity = 1
+    cartitem.product_id = 1
+    cartitem.save()
 
-    #cartitem = CartItem.objects.get(pk=1)
-    #cartitem.quantity = 4
-    #cartitem.save()
+    cartitem = CartItem.objects.get(pk=1)
+    cartitem.quantity = 4
+    cartitem.save()
 
     # You can just delete the cart to delete all its items since its a cascading relationship
-    #cart = Cart.objects.filter(pk__gt=0)
-    #cart.delete()
+    cart = Cart.objects.filter(pk__gt=0)
+    cart.delete()
 
     # Transaction: this will not run order because its wrapped in a transaction wrapper, only if everything can execute will 
     # it then be ran otherwise it will all be rolled back
-    #with transaction.atomic():
-        #order = Order()
-        #order.customer_id = 1
-        #order.save()
+    with transaction.atomic():
+        order = Order()
+        order.customer_id = 1
+        order.save()
 
-        #item = OrderItem()
-        #item.order = order
-        #item.product_id = -1
-        #item.quantity = 1
-        #item.unit_price = 10
-        #item.save()
+        item = OrderItem()
+        item.order = order
+        item.product_id = -1
+        item.quantity = 1
+        item.unit_price = 10
+        item.save()
 
     # Raw SQL: Cannot use filter or annotate even though it returns a query set
     query_set = Product.objects.raw('SELECT id, title FROM store_product')
