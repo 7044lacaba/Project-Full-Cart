@@ -167,9 +167,9 @@ def say_hello(request):
     # Evaluating the query_set request is expensive so anytime the same one is called again it revers to the query set
     # cache. Caching only works if you evaluate the entire query set first. Will not work if 'query_set[0]' is first
     query_set = Product.objects.all()
-    list(query_set)
-    list(query_set)
-    query_set[0]
+    #list(query_set)
+    #list(query_set)
+    #query_set[0]
 
     # Create objects
     #collection = Collection()
@@ -235,12 +235,12 @@ def say_hello(request):
         #item.save()
 
     # Raw SQL: Cannot use filter or annotate even though it returns a query set
-    query_set = Product.objects.raw('SELECT id, title FROM store_product')
+    #query_set = Product.objects.raw('SELECT id, title FROM store_product')
     
     # Raw SQL: Using this meathod you usually have to close the cursor for the allocated memory but using a 'with' is a
     # clean work around. Also the primary use of this method is access data bases directly and bypass the model layer
-    with connection.cursor() as cursor:
-        cursor.execute('')
+    #with connection.cursor() as cursor:
+        #cursor.execute('')
 
 
 
