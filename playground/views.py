@@ -170,18 +170,39 @@ def say_hello(request):
     list(query_set)
     query_set[0]
 
-    # Insert into
-    # If there is missing value then it will route the value to its default setting which is '' (empty)
-    #collection = Collection(pk=11)
-    #collection.title = 'Games'
-    #collection.featured_product = None
+    # Create objects
+    #collection = Collection()
+    #collection.title = 'Video Games'
+    #collection.featured_product = Product(pk=1)
     #collection.save()
+
+    # Above into one line of code but there is no intellesense 
     #collection = Collection.objects.create(name='a', featured_product_id=1)
 
-    # This is to inset and skip any default values
-    Collection.objects.filter(pk=11).update(featured_product=None)
+    # Updating Objects: If there is missing value then it will route the value to its default setting which is '' (empty), 
+    # since the title has not been specified then it will be empty
+    #collection = Collection(pk=11)
+    #collection.featured_product = None
+    #collection.save
 
-    #
+    # Update Objects: You can pull all the information first before updating and will then set the default to whatever 
+    # exsisting value isnt changed - meaning whatever isnt changed 
+    #collection = Collection.objects.get(pk=11)
+    #collection.featured_product = None
+    #collection.save()
+
+    # Update Objects: The code above reads to get information about the updated subject, for optimization (not rec) you can
+    # filter then update to target specific cells 
+    #Collection.objects.filter(pk=11).update(featured_product=None)
+
+    # Delete Objects:
+    #collection = Collection(pk=11)
+    #collection.delete()
+
+    # Delete Objects: multiple
+    #Collection.objects.filter(id__gt=5).delete()
+
+
 
 
     # Since a query set is returned you must convert it to a list. 
